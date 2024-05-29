@@ -23,13 +23,6 @@ public class SimAnnealing {
     //private static List<Task> tasks;
 
     public static int Simulation(Project project) throws IOException {
-        System.out.println("Зашел");
-        //maxResources = TaskReader.readMaxResources("plan0.txt");
-        //tasks = TaskReader.readTasksFromFile("plan0.txt");
-
-
-        //System.out.println(tasks.toString());
-        //System.out.println(calculateDuration(tasks));
         System.out.println(project.toString());
         Task task = (project.getTaskList()).get(0);
         System.out.println(task.toString());
@@ -48,19 +41,11 @@ public class SimAnnealing {
             }
 
             temp =  (temp * (1 - COOLING_RATE));
-            System.out.println("ТЕМПЕРАТУРА УМЕНЬШИЛАСЬ!!!!!!!!!!!!!");
             //temp = (temp - 0.0001);
             //temp = (int) (MAX_TEMP * 0.1 / it);
             it++;
         }
-
-        /*System.out.println("Optimal task order: " + tasks.toString());
-        System.out.println("Project duration: " + calculateDuration(tasks));
-        System.out.println("Iterations: "+ it);;*/
-
         return calculateDuration(project);
-        /*System.out.println(Arrays.toString(startOrder));
-        System.out.println(calculateDuration(startOrder));*/
     }
 
 
@@ -85,16 +70,9 @@ public class SimAnnealing {
     }
 
     public static List<Task> generateNewOrder (List<Task> tasks) {
-
         List<Task> newTasks = new ArrayList<>(tasks);
         Collections.swap(newTasks,new Random().nextInt(newTasks.size()), new Random().nextInt(newTasks.size()));
-
-
-        // ТУТ НЕ РАБОТАЕТ НОРМАЛЬНО ПРОВЕРКА ПРАВИЛЬНОСТИ
-
         while (!isValid(newTasks)){
-            //System.out.println("Генерирую новый список ресурсов");
-
             Collections.swap(newTasks,new Random().nextInt(newTasks.size()), new Random().nextInt(newTasks.size()));
         }
 
@@ -126,7 +104,7 @@ public class SimAnnealing {
         return projectDuration;
     }
 
-    public static int calculateDuration (/*List<Task> tasks*/ Project project){
+    public static int calculateDuration (Project project){
         int currentBusyResources = 0;
         int projectDuration = 0;
         List<Task> tasks = project.getTaskList();
@@ -180,12 +158,11 @@ public class SimAnnealing {
         return true;
     }
     public static boolean isValid (List<Task> tasks){
-       //System.out.println("Проверяю список на валидность");
         for (var task : tasks){
             int id1 = tasks.indexOf(task);
             for (var follow : task.getFollowers()){
                 Task taskFind = tasks.stream()
-                        .filter(t -> t.getTaskNumber() == follow) //вот здесь похоже ошибка
+                        .filter(t -> t.getTaskNumber() == follow)
                         .findFirst()
                         .orElse(null);
                 if (id1 > tasks.indexOf(taskFind)){

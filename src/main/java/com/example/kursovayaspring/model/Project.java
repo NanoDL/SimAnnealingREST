@@ -35,6 +35,12 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Task> taskList = new ArrayList<>();
 
+    public void setTaskList(List<Task> taskList) {
+        this.taskList.clear();
+        if (taskList != null) {
+            this.taskList.addAll(taskList);
+        }
+    }
 
     public void addTask(Task task){
         taskList.add(task);

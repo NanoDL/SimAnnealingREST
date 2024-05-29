@@ -1,13 +1,16 @@
 package com.example.kursovayaspring.services;
 
+import com.example.kursovayaspring.SimAnnealing;
 import com.example.kursovayaspring.model.Project;
 import com.example.kursovayaspring.model.Task;
 import com.example.kursovayaspring.repository.ProjectsRepository;
 import com.example.kursovayaspring.repository.TasksRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -18,7 +21,7 @@ public class ProjectsService {
     private TasksRepository tasksRepository;
     public void save(Project project){
 
-        for (Task task: project.getTaskList()){
+        for (Task task : project.getTaskList()){
 
            // project.addTask(task);
             task.setProject(project);
@@ -57,4 +60,29 @@ public class ProjectsService {
         return projectsRepository.findAll();
     }
 
+    @Transactional
+    public Project updateProjDuration(Long id,Project project, int duration) throws IOException {
+        var updProj = projectsRepository.findById(id).orElseThrow();
+        updProj.setName(project.getName());
+        updProj.setDuration(duration);
+        updProj.setTaskList(project.getTaskList());
+        updProj.setTaskCount(project.getTaskCount());
+        updProj.setMaxResourses(project.getMaxResourses());
+
+        updProj = projectsRepository.save(updProj);
+        return updProj;
+    }
+
+    public Project updateProj(Long id, Project project){
+        var updProj = projectsRepository.findById(id).orElseThrow();
+        updProj.setName(project.getName());
+        updProj.setDuration(project.getDuration());
+        updProj.setTaskList(project.getTaskList());
+        updProj.setTaskCount(project.getTaskCount());
+        updProj.setMaxResourses(project.getMaxResourses());
+
+        updProj = projectsRepository.save(updProj);
+        return updProj;
+
+    }
 }

@@ -5,6 +5,7 @@ import com.example.kursovayaspring.model.Project;
 import com.example.kursovayaspring.model.Task;
 import com.example.kursovayaspring.services.ProjectsService;
 import com.example.kursovayaspring.services.TasksService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ public class ProjectsController {
 
     }
 
+
     @PostMapping
     public ResponseEntity<Project> addProject(@RequestBody Project project, BindingResult result){
         projectsService.save(project);
@@ -55,6 +57,14 @@ public class ProjectsController {
         return ResponseEntity.noContent().build();
 
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateProject(@RequestBody Project project, @PathVariable Long id){
+
+        return ResponseEntity.ok(projectsService.updateProj(id,project));
+
+    }
+
 
     @PostMapping("/{id}/tasks")
     public ResponseEntity<Object> addTask(@PathVariable Long id, @RequestBody Task task){
@@ -75,7 +85,11 @@ public class ProjectsController {
     @GetMapping("/{id}/sim")
     public ResponseEntity<Object> simulation(@PathVariable Long id) throws IOException {
         Project project = projectsService.findProjectById(id);
-        project.setDuration(SimAnnealing.Simulation(project));
+        Hibernate.initialize(project.getTaskList());
+        var duration = SimAnnealing.Simulation(project);
+        project.setDuration(duration);
+        projectsService.save(project);
+        //projectsService.updateProj(id, project);
         return ResponseEntity.ok(project);
     }
 }
